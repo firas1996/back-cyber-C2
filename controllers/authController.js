@@ -19,4 +19,32 @@ exports.signUp = async (req, res) => {
     });
   }
 };
-exports.signIn = async (req, res) => {};
+exports.signIn = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.status(400).json({
+        message: "email and password are required !!!",
+      });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(400).json({
+        message: "Email or password incorrect !!!",
+      });
+    }
+    if (!(await user.comparePass(password, user.password))) {
+      res.status(400).json({
+        message: "Email or password incorrect !!!",
+      });
+    }
+    res.status(201).json({
+      message: "Logged In !!",
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "fail",
+      err: error.message,
+    });
+  }
+};
